@@ -1,0 +1,22 @@
+database:
+  host: host
+  port: port
+  user: user
+  password: password
+  scheme: DB
+
+restapi:
+  auth: require
+  config:
+    folder: /EgWeb/restapi
+
+ftp:
+  use: yes
+  uri: /egfile
+  auth: require
+
+jwt:
+  use: yes
+  uri:
+    generate: /login
+    redirect: no
