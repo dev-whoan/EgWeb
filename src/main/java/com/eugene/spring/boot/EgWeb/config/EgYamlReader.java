@@ -1,16 +1,17 @@
 package com.eugene.spring.boot.EgWeb.config;
 
+import com.eugene.spring.boot.EgWeb.impl.aop.config.EgYamlReaderImpl;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @ConfigurationProperties("configs")
 @Service
-public class EgYamlReader {
+public class EgYamlReader implements EgYamlReaderImpl {
     private static final HashMap<String, String> configs = new HashMap<>();
-    private long lastmodified;
     private List<HashMap<String, String>> paths;
 
     public void setPaths(List<HashMap<String, String>> paths) {
@@ -20,13 +21,18 @@ public class EgYamlReader {
     public void refresh(){
         configs.clear();
         for(HashMap<String, String> path : paths){
-            configs.putAll(path);
             System.out.println("path: " + path);
+            configs.putAll(path);
         }
 
     }
 
-    public static String get(String key){
+    @Override
+    public Map<String, Object> get(String key) {
+        return null;
+    }
+
+    public static String getInfo(String key){
         return configs.get(key);
     }
 }

@@ -19,18 +19,21 @@ public class EgBaseSettingReader extends EgYamlReaderAbs implements EgYamlReader
     private static final HashMap<String, Map<String, Object>> configs = new HashMap<>();
     private static File configFile;
     private static EgBaseSettingReader _instance;
-    private static final ClassPathResource cpr = new ClassPathResource(EgYamlReader.get("egweb"));
+    private static ClassPathResource cpr;
 
-    public EgBaseSettingReader() {
-        if(_instance == null){
-            getInstance();
-            refresh();
-        }
-    }
+    public EgBaseSettingReader() { }
 
     public static EgBaseSettingReader getInstance() {
         if(_instance == null){
             _instance = new EgBaseSettingReader();
+            cpr = new ClassPathResource(EgYamlReader.getInfo("egweb"));
+            if(configFile == null){
+                try {
+                    configFile = cpr.getFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         return _instance;
@@ -65,9 +68,9 @@ public class EgBaseSettingReader extends EgYamlReaderAbs implements EgYamlReader
         try (InputStream inputStream = new FileInputStream(cpr.getFile())){
             Yaml yaml = new Yaml();
             Map<String, Map<String, Object>> data = yaml.load(inputStream);
-            System.out.println(data);
 
             for (String key : data.keySet()) {
+                // log the data you get
                 configs.put(key, data.get(key));
             }
         } catch (IOException e) {

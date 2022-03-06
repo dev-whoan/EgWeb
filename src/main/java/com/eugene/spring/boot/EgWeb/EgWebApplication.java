@@ -17,7 +17,6 @@ public class EgWebApplication implements CommandLineRunner {
 	EgYamlReader eyr;
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(EgWebApplication.class, args);
-
 		//base config reader
 		EgYamlReaderImpl egBaseSettingReader = EgBaseSettingReader.getInstance();
 		loadConfigs(egBaseSettingReader);
