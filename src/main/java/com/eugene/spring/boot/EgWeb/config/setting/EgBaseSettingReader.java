@@ -12,7 +12,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 @Service
@@ -22,14 +21,14 @@ public class EgBaseSettingReader extends EgYamlReaderAbs implements EgYamlReader
     private static EgBaseSettingReader _instance;
     private static final ClassPathResource cpr = new ClassPathResource(EgYamlReader.get("egweb"));
 
-    public EgBaseSettingReader() throws IOException {
+    public EgBaseSettingReader() {
         if(_instance == null){
             getInstance();
             refresh();
         }
     }
 
-    public static EgBaseSettingReader getInstance(){
+    public static EgBaseSettingReader getInstance() {
         if(_instance == null){
             _instance = new EgBaseSettingReader();
         }
@@ -37,27 +36,14 @@ public class EgBaseSettingReader extends EgYamlReaderAbs implements EgYamlReader
         return _instance;
     }
 
-    @Override
-    private void refresh() throws IOException {
-        configs.clear();
-
-        lastModified = configFile.lastModified();
-
-        InputStream inputStream = new FileInputStream(cpr.getFile());
-        Yaml yaml = new Yaml();
-        Map<String, Map<String, Object>> data = yaml.load(inputStream);
-        System.out.println(data);
-        Iterator<String> iter = data.keySet().iterator();
-        while(iter.hasNext()){
-            String key = iter.next();
-            configs.put(key, data.get(key));
-        }
-    }
-
-    @Override
-    private boolean isFileModified() throws IOException {
-        if(configFile == null){
-            configFile = cpr.getFile();
+    private boolean isFileModified() {
+        try{
+            if(configFile == null){
+                configFile = cpr.getFile();
+            }
+        } catch (IOException e){
+            //implement logger
+            e.printStackTrace();
         }
 
         return (configFile.lastModified() != lastModified);
@@ -67,6 +53,26 @@ public class EgBaseSettingReader extends EgYamlReaderAbs implements EgYamlReader
     public Map<String, Object> get(String key){
         if(isFileModified()){
             refresh();
+        }
+
+        return configs.get(key);
+    }
+
+    @Override
+    public void refresh() {
+        configs.clear();
+        lastModified = configFile.lastModified();
+        try (InputStream inputStream = new FileInputStream(cpr.getFile())){
+            Yaml yaml = new Yaml();
+            Map<String, Map<String, Object>> data = yaml.load(inputStream);
+            System.out.println(data);
+
+            for (String key : data.keySet()) {
+                configs.put(key, data.get(key));
+            }
+        } catch (IOException e) {
+            //implement logger
+            e.printStackTrace();
         }
     }
 }
